@@ -1,25 +1,18 @@
-from fastapi import FastAPI
+from flask import Flask
 from vercel import KV
-from contextlib import asynccontextmanager
 
-app = FastAPI()
+app = Flask(__name__)
 kv = KV()
 
 
-@asynccontextmanager
-async def lifespan(app: FastAPI):
-    await kv.put("estado", "true")
-    yield
-
-
-@app.get("/get_estado")
-async def get_estado():
+@app.get("/estado")
+async def estado():
     value = await kv.get("estado")
     return {"estado": value}
 
 
-@app.put("/toggle_estado")
-async def toggle_estado():
+@app.get("/toggle")
+async def toggle():
     current_value = await kv.get("estado")
     new_value = "false" if str(current_value).lower() == "true" else "true"
     await kv.put("estado", new_value)
