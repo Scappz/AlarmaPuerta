@@ -1,8 +1,10 @@
-from flask import Flask
+from flask import Flask, jsonify
 from vercel_kv_sdk import KV
+import os
 
 app = Flask(__name__)
 kv = KV()
+TOGGLE_SECRET = os.getenv("TOGGLE_SECRET")
 
 
 def parse_bool(strval):
@@ -16,7 +18,11 @@ def estado():
 
 
 @app.get("/toggle")
-def toggle():
+def toggle(request):
+    token = request.headers.get("Secret")
+    if token != TOGGLE_SECRET:
+        return jsonify({"error": "Unauthorized"}), 403
+
     value = parse_bool(kv.get("estado"))
     kv.set("estado", not value)
     return {"estado": not value}
