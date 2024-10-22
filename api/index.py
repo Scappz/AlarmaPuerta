@@ -18,7 +18,7 @@ def estado():
 
 
 @app.get("/toggle")
-def toggle(request):
+def toggle():
     token = request.headers.get("Secret")
     if token != TOGGLE_SECRET:
         return jsonify({"error": "Unauthorized"}), 403
